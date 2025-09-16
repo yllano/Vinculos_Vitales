@@ -6,17 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Mostrar la vista de registro.
      */
     public function create(): View
     {
@@ -24,37 +22,32 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * Manejar el registro de un nuevo familiar.
      */
     public function store(Request $request)
     {
+        // ✅ Validación solo para familiares
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|confirmed|min:8',
-            'role' => 'required|in:familiar,adulto',
         ]);
 
+        // ✅ Crear siempre como familiar
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'familiar_id' => $request->role === 'adulto' ? auth()->id() : null,
+            'role'     => 'familiar', // forzado
         ]);
 
+        // Dispara el evento de registro
+        event(new Registered($user));
+
+        // Inicia sesión automáticamente
         Auth::login($user);
-        Auth::login($user);
 
-        if ($user->role === 'familiar') {
-            return redirect()->route('familiar.dashboard');
-        } else {
-            return redirect()->route('adulto.dashboard');
-        }
-
-
+        // Redirige al dashboard del familiar
+        return redirect()->route('dashboard.familiar');
     }
-
 }

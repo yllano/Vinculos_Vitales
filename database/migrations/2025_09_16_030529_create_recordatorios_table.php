@@ -1,33 +1,31 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('notificaciones', function (Blueprint $table) {
+        Schema::create('recordatorios', function (Blueprint $table) {
             $table->id();
+
+            $table->unsignedBigInteger('familiar_id');
             $table->unsignedBigInteger('adulto_id');
-            $table->string('mensaje');
-            $table->boolean('leida')->default(false);
+
+            $table->string('titulo');
+            $table->text('descripcion')->nullable();
+            $table->dateTime('fecha_hora');
+
             $table->timestamps();
 
+            $table->foreign('familiar_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('adulto_id')->references('id')->on('users')->onDelete('cascade');
         });
-
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('notificaciones');
+        Schema::dropIfExists('recordatorios');
     }
 };

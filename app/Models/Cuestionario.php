@@ -17,8 +17,8 @@ class Cuestionario extends Model
     protected $fillable = ['adulto_id', 'respuestas'];
 
     // 👉 Un cuestionario pertenece a un adulto mayor
-    public function adultoMayor()
+    public function adulto()
     {
-        return $this->belongsTo(AdultoMayor::class, 'adulto_id');
+        return $this->belongsTo(Adulto::class, 'adulto_id');
     }
 }

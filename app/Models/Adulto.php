@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AdultoMayor extends Model
+class Adulto extends Model
 {
     use HasFactory;
 

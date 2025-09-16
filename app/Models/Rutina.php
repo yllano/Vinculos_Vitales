@@ -17,8 +17,13 @@ class Rutina extends Model
     protected $fillable = ['adulto_id', 'tipo', 'descripcion', 'hora', 'fecha', 'completado'];
 
     // 👉 Una rutina pertenece a un adulto mayor
-    public function adultoMayor()
+    public function adulto()
     {
-        return $this->belongsTo(AdultoMayor::class, 'adulto_id');
+        return $this->belongsTo(Adulto::class, 'adulto_id');
     }
+        public function familiar()
+    {
+        return $this->belongsTo(User::class, 'familiar_id');
+    }
+
 }

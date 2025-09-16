@@ -7,59 +7,35 @@ use Illuminate\Http\Request;
 
 class RutinaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $rutinas = Rutina::where('familiar_id', auth()->id())->with('adulto')->get();
+        return view('rutinas.index', compact('rutinas'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $adultos = auth()->user()->adultos; // adultos vinculados al familiar
+        return view('rutinas.create', compact('adultos'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'adulto_id' => 'required|exists:adultos,id',
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'fecha_hora' => 'required|date',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Rutina $rutina)
-    {
-        //
-    }
+        Rutina::create([
+            'adulto_id' => $request->adulto_id,
+            'familiar_id' => auth()->id(),
+            'titulo' => $request->titulo,
+            'descripcion' => $request->descripcion,
+            'fecha_hora' => $request->fecha_hora,
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Rutina $rutina)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Rutina $rutina)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Rutina $rutina)
-    {
-        //
+        return redirect()->route('rutinas.index')->with('success', 'Rutina creada con éxito');
     }
 }
