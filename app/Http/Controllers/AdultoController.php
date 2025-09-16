@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Recordatorio;
 
 class AdultoController extends Controller
 {
@@ -24,26 +23,25 @@ class AdultoController extends Controller
 
     // Guardar adulto mayor
     public function store(Request $request)
-{
-    $request->validate([
-        'adulto_id' => 'required|exists:users,id',
-        'titulo' => 'required|string|max:255',
-        'descripcion' => 'nullable|string',
-        'fecha' => 'required|date', // 👈 mismo nombre que en el formulario
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'fecha_nacimiento' => 'nullable|date',
+            'condiciones_salud' => 'nullable|string',
+        ]);
 
-    Recordatorio::create([
-        'familiar_id' => auth()->id(),
-        'adulto_id'   => $request->adulto_id,
-        'titulo'      => $request->titulo,
-        'descripcion' => $request->descripcion,
-        'fecha'       => $request->fecha, // 👈 igual al fillable del modelo
-    ]);
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make('12345678'), // contraseña por defecto
+            'role' => 'adulto',
+            'familiar_id' => auth()->id(),
+            'fecha_nacimiento' => $request->fecha_nacimiento,
+            'condiciones_salud' => $request->condiciones_salud,
+        ]);
+        return redirect()->route('dashboard.familiar')->with('success', 'Adulto mayor registrado correctamente.');
 
-    return redirect()->route('dashboard.familiar')
-        ->with('success', 'Recordatorio creado con éxito.');
+
+    }
 }
-
-
-}
-
